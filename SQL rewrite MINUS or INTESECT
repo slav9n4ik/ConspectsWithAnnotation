@@ -1,0 +1,49 @@
+https://stackoverflow.com/questions/32543987/rewriting-an-sql-query-without-using-intersect-operator
+**Question**
+
+I want to query this statement:
+
+Bars that are frequented by both Mike and John
+[table frequents consists of 2 columns: drinkers and the bars they go to]
+
+I originally thought of using this SQL query, using the intersect operator:
+
+SELECT  bar
+FROM frequents
+WHERE drinker ='Mike'
+INTERSECT
+SELECT bar
+FROM frequents
+WHERE drinker ='John'
+but MySQL doesn't support the usage of the Intersect operator. I though of maybe using the Join operator, but I am have a difficult time rewriting this query.
+
+
+**Answer**
+
+It's an inner join you want:
+
+SELECT a.bar
+FROM frequents a
+JOIN frequents b ON a.bar = b.bar 
+WHERE a.drinker = 'Mike'
+  AND b.drinker = 'John';
+Note that the intersect compares all columns in the select list, so the equivalent join needs to do the same. In your case it's just one column though.
+
+The intersect operator doesn't really translate directly to an inner join though as intersect returns rows that are common to the sets compared, while the join filters on given conditions and produces a new set of rows that are made up from the rows in the joined sets. There are also differences in how null values are handled (and duplicates).
+
+Another option would be to use the exists predicate with a correlated subquery:
+
+SELECT a.bar
+FROM frequents a
+WHERE a.drinker ='Mike'
+  AND EXISTS (
+    SELECT 1 FROM frequents b 
+    WHERE a.bar = b.bar
+      AND b.drinker ='John'
+    );
+Or the in predicate:
+
+SELECT bar
+FROM frequents
+WHERE drinker ='Mike'
+AND bar IN (SELECT bar FROM frequents WHERE drinker ='John')
