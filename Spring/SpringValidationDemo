@@ -1,1 +1,6 @@
 https://github.com/wololock/rest-validation-demo
+
+//Кастомная валидация динамического dto
+//Create a custom validation constraint and annotation
+https://stackoverflow.com/questions/41718208/java-string-date-validation-using-hibernate-api
+https://phoenixnap.com/kb/spring-boot-validation-for-rest-services
